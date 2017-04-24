@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+    
+    <!-- 引入jdbc属性文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    
+    <!-- 配置c3p0连接池信息 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.user}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    
+    <!-- spring整合hibernate配置文件 -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <!-- 管理连接池 -->
+        <property name="dataSource" ref="dataSource" />
+        <!-- 配置hibernate属性 -->
+        <property name="hibernateProperties">
+            <props>
+                <!-- 方言等 -->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.connection.autocommit">false</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+        </property>
+        
+        <!-- 加载hibernate映射 -->
+        <property name="mappingResources">
+        	<list>
+        		<value>com/wes/shop/user/User.hbm.xml</value>
+        		<value>com/wes/shop/category/Category.hbm.xml</value>
+        		<value>com/wes/shop/product/Product.hbm.xml</value>
+        		<value>com/wes/shop/categorysecond/CategorySecond.hbm.xml</value>
+        		<value>com/wes/shop/order/Order.hbm.xml</value>
+        		<value>com/wes/shop/order/OrderItem.hbm.xml</value>
+        	</list>
+        </property>
+    </bean>
+    
+    
+    <!-- 事务管理 -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+       <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    
+    <!-- 注解开启事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    
+    
+    <!-- 配置action类 -->
+    <bean name="indexAction" class="com.wes.shop.index.IndexAction" scope="prototype">
+    	<property name="categoryService" ref="categoryService"/>
+    	<property name="productService" ref="productService"/>
+    </bean>
+    <bean name="userAction" class="com.wes.shop.user.UserAction" scope="prototype">
+    	<property name="userService" ref="userService" />
+    </bean>
+    <bean name="checkImg" class="com.wes.shop.user.CheckImgAction" scope="prototype"></bean>
+    <bean name="categoryAction" class="com.wes.shop.category.CategoryAction" scope="prototype">
+    	<property name="categoryService" ref="categoryService"/>
+    	<property name="productService" ref="productService"/>
+    </bean>
+    <bean name="productAction" class="com.wes.shop.product.ProductAction" scope="prototype" >
+    	<property name="productService" ref="productService"/>
+    	<property name="categoryService" ref="categoryService"/>
+    </bean>
+    <bean name="cartAction" class="com.wes.shop.cart.CartAction">
+    	<property name="productService" ref="productService"/>
+    </bean>
+    <bean name="orderAction" class="com.wes.shop.order.OrderAction">
+    	<property name="orderService" ref="orderService"/>
+    </bean>
+    
+    <!-- 配置service类 -->
+    <bean name="userService" class="com.wes.shop.user.UserService" scope="prototype">
+    	<property name="userDao" ref="userDao"/>
+    </bean>
+    <bean name="categoryService" class="com.wes.shop.category.CategoryService">
+    	<property name="categoryDao" ref="categoryDao"/>
+    </bean>
+    <bean name="productService" class="com.wes.shop.product.ProductService">
+    	<property name="productDao" ref="productDao" />
+   	</bean>
+   	<bean name="orderService" class="com.wes.shop.order.OrderService">
+   		<property name="orderDao" ref="orderDao"/>
+   	</bean>
+    
+    <!-- 配置dao类 -->
+    <bean name="userDao" class="com.wes.shop.user.UserDao" scope="prototype">
+    	<property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <bean name="categoryDao" class="com.wes.shop.category.CategoryDao">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean name="productDao" class="com.wes.shop.product.ProductDao">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean name="orderDao" class="com.wes.shop.order.OrderDao">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+</beans>

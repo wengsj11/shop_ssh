@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+    <constant name="struts.devMode" value="false" />
+    <package name="default" namespace="/" extends="struts-default">
+    	<global-results>
+    		<result name="msg">/WEB-INF/jsp/msg.jsp</result>
+    	</global-results>
+    
+    	<!-- 首页indexAction -->
+    	<action name="index" class="indexAction">
+    		<result name="indexSuccess">/WEB-INF/jsp/index.jsp</result>
+    	</action>
+    	<!-- 用户action -->
+    	<action name="user_*" class="userAction" method="{1}">
+    		<result name="registPageSuccess">/WEB-INF/jsp/regist.jsp</result>
+    		<result name="registInput">/WEB-INF/jsp/regist.jsp</result>
+    		<result name="loginInput">/WEB-INF/jsp/login.jsp</result>
+    		<result name="registSuccess">/WEB-INF/jsp/msg.jsp</result>
+    		<result name="loginPageSuccess">/WEB-INF/jsp/login.jsp</result>
+    		<result name="loginSuccess" type="redirectAction">index</result>
+    		<result name="logoutSuccess" type="redirectAction">index</result>
+    	</action>
+    	<!-- 验证码action -->
+    	<action name="checkImg" class="checkImg"></action>
+    	<!-- 分类查询action -->
+    	<action name="category_*" class="categoryAction" method="{1}">
+			<result name="findByCidSuccess">/WEB-INF/jsp/list.jsp</result>    	
+    	</action>
+    	<!-- 商品详情查询action -->
+    	<action name="product_*" class="productAction" method="{1}">
+    		<result name="findByPidSuccess">/WEB-INF/jsp/detail.jsp</result>  
+    	</action>
+    	<!-- 购物车action -->
+    	<action name="cart_*" class="cartAction" method="{1}">
+    		<result name="addCartSuccess">/WEB-INF/jsp/cart.jsp</result> 
+    		<result name="clearCartSuccess">/WEB-INF/jsp/cart.jsp</result> 
+    		<result name="myCartSuccess">/WEB-INF/jsp/cart.jsp</result> 
+    		<result name="removeCartSuccess">/WEB-INF/jsp/cart.jsp</result> 
+    	</action>
+    	<!-- 订单action -->
+    	<action name="order_*" class="orderAction" method="{1}">
+    		<result name="createOrderSuccess">/WEB-INF/jsp/order.jsp</result>
+    	</action>
+    </package>
+
+</struts>
